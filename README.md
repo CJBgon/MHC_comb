@@ -1,5 +1,5 @@
 # MHC_comb
-Takes .json files as input and prints every possible combination of HLA class II combinations to be picked up in bash script 
+Takes .json files as input and prints every biologically possible combination of HLA class I, II or both alleles to be picked up in bash script 
 
 ## Dependencies:
 * Itertools
@@ -19,7 +19,7 @@ Primarily for use in pvactools bash scripts where comma separated alleles must b
 ```Bash
 readarray arcashlatype <<< "$(python haplo_comb.py -j /path/to/file.json -r 2 -o both -s ',')"
 ```
-`$arcashlatype` can then be provided to pvactools
+`$arcashlatype` can then be used as an argument for pvactools
 
 At the moment the input json file requires to be structred like the arcasHLA output:
 

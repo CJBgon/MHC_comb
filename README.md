@@ -1,7 +1,7 @@
 # MHC_comb
 Takes .json files as input and prints every possible combination of HLA class II combinations to be picked up in bash script 
 
-Primarily for use in pvactools bash scripts, Where comma separated alleles must be provided. To read the json into an array you can pass to pvactools use:
+Primarily for use in pvactools bash scripts where comma separated alleles must be provided. To read the json into an bash array  use:
 
 readarray arcashlatype <<< "$(python haplo_comb.py -j /path/to/file.json -r 2 -o both -s ',')"
 

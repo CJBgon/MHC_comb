@@ -2,6 +2,7 @@
 Takes .json files as input and prints every possible combination of HLA class II combinations to be picked up in bash script 
 
 Primarily for use in pvactools bash scripts, Where comma separated alleles must be provided. To read the json into an array you can pass to pvactools use:
+
 readarray arcashlatype <<< "$(python haplo_comb.py -j /path/to/file.json -r 2 -o both -s ',')"
 
 At the moment the json file requires to be structred like the arcasHLA output:

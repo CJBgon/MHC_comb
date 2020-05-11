@@ -39,7 +39,3 @@ At the moment the input json file requires to be structred like the arcasHLA out
 "DRB1": ["DRB1*01:01:01", "DRB1*03:01:01"],
 "DRB3": ["DRB3*02:02:01"]}
 ```
-
-the output will look like:
-
-echo $arcashlatype

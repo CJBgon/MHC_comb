@@ -27,8 +27,6 @@ def Parser():
 
     return Options
 
-# jfile = "/home/christian/Documents/Apocrita/TCGA-IB-7887_RNA.genotype.json"
-# res = 2
 def jsonproc(Options):
     # read jason file into dict:
     with open(Options.jfile) as jsonfile:

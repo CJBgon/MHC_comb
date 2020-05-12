@@ -9,8 +9,8 @@ Takes .json files as input and prints every biologically possible combination of
 ## Usage:
 For a short explanation per argument type `haplo_comb.py -h`
 
-* `-j, --json`: Path to the arasHLA .json output.
-* `-r, --res`: The resolution of the HLA alleles that get returned.
+* `-j, --json`: Path to the arcasHLA .json output.
+* `-r, --res`: The resolution of the HLA alleles that gets returned.
 * `-o, --object`: Which HLA types to return. Options are: 'I', 'II' or 'both'
 * `-s, --sep`: What separator to use between the unique haplotypes. pvactools requires ','.
 

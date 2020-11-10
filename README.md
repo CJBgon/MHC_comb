@@ -1,5 +1,5 @@
 # MHC_comb
-Combine the output of several HLA haplotype calling tools to a concencus.
+Combine the output of one or several HLA haplotype calling tools to a concencus.
 Takes .json files as input and prints every biologically possible combination of HLA class I, II or both alleles to be picked up in bash script 
 
 ## Dependencies:
@@ -26,9 +26,16 @@ For a short explanation per argument type `haplo_comb.py -h`
 Primarily for use in pvactools bash scripts where comma separated alleles must be provided. To read the json into an bash array use:
 
 ```Bash
-readarray arcashlatype <<< "$(python haplo_comb.py -j /path/to/file.json -r 2 -o both -s ',')"
+readarray arcashlatype <<< "$(python haplo_comb.py -a /path/to/file.json -r 2 -o both -d ',')"
 ```
 `$arcashlatype` can then be used as an argument for pvactools
+
+You can combine outputs of various tools by the associated arguments. Concencsus on haplotypes will initially be based on the number of occurances accross the tools. In the case of a tie, a tie breaker score gets calculated based on the weights assigned to each tool. With the highest weight assigned to the first place.
+
+
+```Bash
+readarray arcashlatype <<< "$(python haplo_comb.py -a /path/to/file.json -x /path/to/xhla.tsv -w 'arcasHLA xHLA' -r 2 -o both -d ',')"
+```
 
 Input of MHC_comb are the native output of haplotype calling tools.
 

@@ -8,7 +8,8 @@ import numpy as np
 import warnings
 from collections.abc import Iterable
 from collections import defaultdict
-from itertools import chain
+from itertools import chain, cycle
+from functools import reduce
 
 
 def Parser():
@@ -34,8 +35,11 @@ def Parser():
                         help="What separator to use for output. default= ',' ")
     parser.add_argument("-l", "--log", dest="log", default=False, action='store_true',
                         help="boolean if a log file should be created. DEFAULT = False")
-    parser.add_argument("-f", "--logfile", dest="logfile", type=str, default=None,
-                        help="directory to keep log in.")
+    parser.add_argument("--lohhla", dest="lohhla", default=False, action='store_true',
+                        help="boolean if a log file should be created. DEFAULT = False")
+    parser.add_argument("-f", "--logpath", dest="logpath", type=str, default=None,
+                        help="directory to output logs and results in.")
+
 
     Options=parser.parse_args()
     if (
@@ -51,9 +55,9 @@ def Parser():
         if Options.jfile[-4:] != "json":
             parser.error("Invalid filetype for -a, please provide a .json.")
 
-    if Options.log:
-        if not Options.logfile:
-            parser.error('No log file location provided with -f')
+    if Options.log or Options.lohhla:
+        if not Options.logpath:
+            parser.error('No log file location provided with -f or --lohhla')
 
     return Options
 
@@ -151,7 +155,7 @@ def breaktie(tie, haplo, dictlist, we_filt):
 
 
 def top_n(d, n):
-	# return the top value from our list
+    # return the top value from our list
     dct = defaultdict(list)
     for k, v in d.items():
         dct[v].append(k)
@@ -190,7 +194,8 @@ def consensus(di, we, log, logf):
 
     # if either the typer with the highest assigned weight, or two or more typers only have one allele
     # we are most likely looking at a homozygous patient. therefore, pick only one allele.
-	# Likely, this requires some testing and optimisation.
+    # Likely, this requires some testing and optimisation.
+
 
     for d in setofkeys:
         usedict = {}
@@ -324,8 +329,8 @@ def consensus(di, we, log, logf):
 
                     with open(logf, 'a+') as lo:
                         lo.write('\t'.join(
-                            [str(k),str(d),str(cons),str(typei),str(typeii)]
-                        )+ '\n')
+                            [str(k), str(d), str(cons), str(typei), str(typeii)]
+                        ) + '\n')
 
         else:
             warnings.formatwarning = custom_formatwarning
@@ -423,6 +428,29 @@ def gencom(mhcdict):
     return ls
 
 
+def fileout(mhcdict, path):
+    ndict = {}
+    for k in ['A', 'B', 'C']:
+        usedict = mhcdict[k]  # change to k here
+        if len(usedict) < 2:  # output requires 2 HLA alleles even in case of homozygosity
+            iterc = cycle(usedict)
+            for _ in range(1):
+                usedict.append(next(iterc))
+        # now bring it back to the format we need:
+        repls = ('*', '_'), (':', '_')
+        check = []
+        for x in usedict:
+            check.append(reduce(lambda a, kv: a.replace(*kv), repls, x))
+        nkey='HLA-'+k
+        retcheck = ['hla_'+r.lower() for r in check]
+        ndict[nkey] = retcheck
+    mhcdf = pd.DataFrame(dict([(r, pd.Series(i)) for r, i in ndict.items()]))
+    mhcdft = mhcdf.T
+    mhcdft.to_csv(path_or_buf=path, sep='\t', index=True, header=False)
+
+
+
+
 def main():
     Options = Parser()
     # get all dicts of available options.
@@ -452,12 +480,14 @@ def main():
 
     dictlist = {'arcasHLA': arcasdict, 'xHLA': xhladict, 'Polysolver': polydict, 'seq2HLA': seq2dict}
     if Options.log:
-        if Options.logfile[-1] != '/':
-            loguse = Options.logfile + '/MHC_comb_log.txt'
+        if Options.logpath[-1] != '/':
+            loguse = Options.logpath + '/MHC_comb_log.txt'
         else:
-            loguse = Options.logfile + 'MHC_comb_log.txt'
+            loguse = Options.logpath + 'MHC_comb_log.txt'
 
-    condict = consensus(di=dictlist, we=Options.weight, log = Options.log, logf = loguse)
+        condict = consensus(di=dictlist, we=Options.weight, log=Options.log, logf=loguse)
+    else:
+        condict = consensus(di=dictlist, we=Options.weight, log=False, logf=None)
 
     mii = {'DOA', 'DMA', 'DPA1', 'DPB1', 'DOB', 'DMB',
            'DRA', 'DQA1', 'DQB1', 'DQB2', 'DRB1', 'DRB3', 'DRB5'}
@@ -487,6 +517,16 @@ def main():
 
     else:
         raise ValueError("MHC allele option not recognized: 'I', 'II' or 'both.")
+
+    # we need condict for this, therefore we need to run it later.
+    if Options.lohhla:
+        if Options.logpath[-1] != '/':
+            loghla = Options.logpath + '/mhccomb.winners.hla.txt'
+        else:
+            loghla = Options.logpath + 'mhccomb.winners.hla.txt'
+
+        fileout(mhcdict=condict, path=loghla)
+
 
     returnStr = ''
     for item in out:

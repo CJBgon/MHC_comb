@@ -14,6 +14,9 @@ Finally an output file compatible with LOHHLA can be written.
 
 ## Dependencies:
 * Itertools
+* functools
+* collections.abc
+* collections
 * json
 * argparse
 * pandas

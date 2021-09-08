@@ -36,7 +36,7 @@ def Parser():
     parser.add_argument("-l", "--log", dest="log", default=False, action='store_true',
                         help="boolean if a log file should be created. DEFAULT = False")
     parser.add_argument("--lohhla", dest="lohhla", default=False, action='store_true',
-                        help="boolean if a log file should be created. DEFAULT = False")
+                        help="boolean if a LOHHLA compatible .txt file should be created. DEFAULT = False")
     parser.add_argument("-f", "--logpath", dest="logpath", type=str, default=None,
                         help="directory to output logs and results in.")
 

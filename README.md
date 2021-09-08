@@ -1,6 +1,16 @@
 # MHC_comb
-Combine the output of one or several HLA haplotype calling tools to a concencus.
-Takes .json files as input and prints every biologically possible combination of HLA class I, II or both alleles to be picked up in bash script 
+Combine the output of one or several HLA haplotype calling tools to a concencus HLA typing.
+
+Supports: 
+* arcasHLA (https://github.com/RabadanLab/arcasHLA)
+* xHLA  (https://github.com/humanlongevity/HLA)
+* seq2HLA (https://github.com/TRON-Bioinformatics/seq2HLA)
+* POLYSOLVER (https://software.broadinstitute.org/cancer/cga/polysolver)
+
+
+MHC_comb takes the output from in silico Haplotype tools as input. It determines a concencus HLA type from these and returns prints every biologically possible combination of HLA class I, II or both alleles.
+
+Finally an output file compatible with LOHHLA can be written.
 
 ## Dependencies:
 * Itertools
@@ -20,10 +30,11 @@ For a short explanation per argument type `haplo_comb.py -h`
 * `-w, --weight`: Set weights to determine consensus. Default = 'arcasHLA Polysolver seq2HLA xHLA'.
 * `-o, --object`: Which HLA types to return. Options are: 'I', 'II' or 'both'.
 * `-d, --sep`: What separator to use between the unique haplotypes. pvactools requires ','.
-* `-l, --log`: Boolean if a log file should be created. DEFAULT = False".
-* `-f, --logfile`: "Path to directory of log output.
+* `-l, --log`: Boolean if a log file should be created. DEFAULT = False.
+* `-f, --logfile`: Path to directory of log output.
+* `--lohhla`: Boolean if a LOHHLA compatible .txt file should be created. DEFAULT = False.
 
-Primarily for use in pvactools bash scripts where comma separated alleles must be provided. To read the json into an bash array use:
+To acquire an array of HLA alleles, like required in pvactools bash scripts (comma separated alleles must be provided), use:
 
 ```Bash
 readarray arcashlatype <<< "$(python haplo_comb.py -a /path/to/file.json -r 2 -o both -d ',')"
@@ -37,22 +48,15 @@ You can combine outputs of various tools by the associated arguments. Concencsus
 readarray arcashlatype <<< "$(python haplo_comb.py -a /path/to/file.json -x /path/to/xhla.tsv -w 'arcasHLA xHLA' -r 2 -o both -d ',')"
 ```
 
-Input of MHC_comb are the native output of haplotype calling tools.
 
-output of arcasHLA in json format:
-```
-{"A": ["A*01:02:01", "A*02:01:01"],
-"B": ["B*18:01:01", "B*15:01:01"],
-"C": ["C*05:01:01", "C*07:01:01"],
-"DMA": ["DMA*01:01:01"],
-"DMB": ["DMB*01:03:01", "DMB*01:01:01"],
-"DOA": ["DOA*01:01:02"],
-"DOB": ["DOB*01:03", "DOB*01:03:01"],
-"DPA1": ["DPA1*01:02:01"],
-"DPB1": ["DPB1*01:02:01","DPB1*04:01:01"],
-"DQA1": ["DQA1*02:02:01"],
-"DQB1": ["DQB1*02:02:01", "DQB1*05:01:01"],
-"DRA": ["DRA*02:01:01"],
-"DRB1": ["DRB1*01:01:01", "DRB1*03:01:01"],
-"DRB3": ["DRB3*02:02:01"]}
-```
+
+output of LOHHLA compatible format:
+|<!-- -->|    <!-- -->    |   <!-- -->      |
+| ------ | -------------- | --------------- |
+| HLA-A  | hla_a_01_02_01 | hla_a_01_02_01  |
+| HLA-B  | hla_b_18_01_01 | hla_b_15_01_01  |
+| HLA-C  | hla_c_05_01_01 | hla_c_05_01_01  |
+
+
+
+

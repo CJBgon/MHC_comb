@@ -41,7 +41,7 @@ def Parser():
                         help="directory to output logs and results in.")
 
 
-    Options=parser.parse_args()
+# Options=parser.parse_args()
     if (
             not Options.jfile and
             not Options.xhla  and
@@ -432,14 +432,18 @@ def fileout(mhcdict, path):
     ndict = {}
     for k in ['A', 'B', 'C']:
         usedict = mhcdict[k]  # change to k here
-        if len(usedict) < 2:  # output requires 2 HLA alleles even in case of homozygosity
-            iterc = cycle(usedict)
+        # usedict has yet to be flattend,
+        # mainly in the case of homozygousity, there will be nested lists in the dictionary resulting in errors.
+        # flatten dict:
+        usedictfl = non_recursive_flatten(list(usedict))
+        if len(usedictfl) < 2:  # output requires 2 HLA alleles even in case of homozygosity
+            iterc = cycle(usedictfl)
             for _ in range(1):
-                usedict.append(next(iterc))
+                usedictfl.append(next(iterc))
         # now bring it back to the format we need:
         repls = ('*', '_'), (':', '_')
         check = []
-        for x in usedict:
+        for x in usedictfl:
             check.append(reduce(lambda a, kv: a.replace(*kv), repls, x))
         nkey='HLA-'+k
         retcheck = ['hla_'+r.lower() for r in check]

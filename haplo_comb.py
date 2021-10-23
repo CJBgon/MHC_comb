@@ -41,7 +41,7 @@ def Parser():
                         help="directory to output logs and results in.")
 
 
-# Options=parser.parse_args()
+    Options=parser.parse_args()
     if (
             not Options.jfile and
             not Options.xhla  and
